@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>Ajax con POST</title> 
+
+<script>
+	function Grabar(){
+
+		var xhr= new XMLHttpRequest();
+		xhr.onreadystatechange=function(){
+			if(this.status==200 && this.readyState==4){
+				alert(this.responseText);
+			}
+
+		}
+		xhr.open("POST","grabar_noticia.php?a="+Math.random(),true);
+		//si envio con un post hace falta modificar la cabecera para poder enviar datos
+		xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xhr.send("texto="+document.getElementById('noticia').value);
+	}
+</script>
+
+
+</head>
+<body>
+	<h1>Envio de nueva noticia</h1>
+	Noticia:<input type="text" id="noticia">
+	<input type="submit" value="Grabar noticias" onclick="Grabar()">
+</body>
+</html>

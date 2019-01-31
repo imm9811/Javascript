@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>Ley D'Hont</title>
+<script>
+	var partidos=[];
+	window.onload=function(){
+
+		var xhr = new XMLHttpRequest();
+
+            xhr.onreadystatechange = function(){
+                if(this.readyState == 4 && this.status == 200){
+                    //En this.responseXML tengo el archivo
+                    var datos = this.responseXML;
+                    //Nombre del municipio
+                    document.getElementById("ciudad").innerHTML=
+                    datos.getElementsByTagName("nombre_sitio")[0].firstChild.nodeValue;
+
+                    //cargamos el array de partidos
+                    var listaPartidos=datos.getElementsByTagName("partido");
+                    for (var i = 0; i < listaPartidos.length; i++) {
+                    	var partidoNombre=listaPartidos[i].getElementsByTagName("nombre")[0].childNodes[0].nodeValue;
+
+                    	var partidoVotos=Number(listaPartidos[i].getElementsByTagName("votos_numero")[0].childNodes[0].nodeValue);
+                 
+                    	//inserto un elemento del array
+                    	partidos.push({
+                    		partido:partidoNombre,
+                    		votos:partidoVotos,
+                    		escanos:0
+                    	});
+                    }
+                    RepartoDhont(partidos,109);
+                    Presenta(partidos);
+                }
+            }
+            xhr.open("get","elecciones.xml",true);
+            xhr.send();
+}
+
+function Presenta(partidos){
+//console.log(partidos);
+	var salida = "<table border='1' >";
+	salida+="<tr><th>Partido</th><th>Votos</th><th>Escaños</th></tr>";
+	for (var i = 0; i < partidos.length; i++) {
+		salida+="<tr><td>"+partidos[i].partido+"</td><td><input type='number' id="+i+" value='"+partidos[i].votos+"'></td><td>"+partidos[i].escanos+"</td></tr>";
+	}
+
+	salida+="</table>";
+	document.getElementById("reparto").innerHTML=salida;
+
+	var inputs =document.getElementsByTagName("input");
+	for (var i = 0; i < inputs.length; i++) {
+		inputs[i].onchange=function(){
+			partidos[this.id].votos=Number(this.value);
+			RepartoDhont(partidos,109);
+			Presenta(partidos);
+		}
+	}
+
+}
+	/*var partidos=[
+	{partido:"P1",votos:500,escanos:0},
+	{patido: "P2",votos:600,escanos:0},
+	{patido: "P3",votos:250,escanos:0},
+	{patido: "P4",votos:200,escanos:0}
+	];*/	
+
+	function RepartoDhont(partidos,totalEscanos){
+		//ordenamos el array de partidos por numero de votos descendente
+		partidos.sort(function(a,b){
+			if(a.votos>b.votos) return -1;
+			if(a.votos<b.votos) return 1;
+			else return 0;
+		});
+
+		//cremos el array bidimensional para reparto
+		var dhont=[];
+		//empezamos por la fila
+		for (var fila = 0; fila< partidos.length; fila++) {
+			partidos[fila].escanos=0;
+			dhont[fila]=[];
+			for (var columna = 0; columna<totalEscanos; columna++) {
+				dhont[fila][columna]=partidos[fila].votos/(columna+1);
+			}
+		}
+
+		//buscamos los primeros N maximos
+		for (var veces = 1; veces < totalEscanos; veces++) {
+			var indiceMayor=0;
+			for (var i = 1; i < partidos.length; i++) {
+				if (dhont[i][partidos[i].escanos]>dhont[indiceMayor][partidos[indiceMayor].escanos]) {
+					indiceMayor=i;
+				}
+			}
+			partidos[indiceMayor].escanos++;
+		}
+
+		console.log(dhont);
+
+
+	}//fin funcion 
+
+
+	//RepartoDhont(partidos,5);
+	console.log(partidos);
+
+
+</script>
+
+</head>
+<body>
+	
+<h1>Resultado en <span id="ciudad"></span></h1>
+<div id="reparto"></div>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Prueba con archivo XML</title>
+
+<script>
+	window.onload=function(){
+		var xhr= new XMLHttpRequest();
+		xhr.onreadystatechange=Presenta;
+	/*	function(){
+			if(this.status==200 && this.readyState==4){
+				alert(this.responseText);
+			}
+
+		}*/
+		xhr.open("POST","cd_catalogo.xml",true);
+		xhr.send();
+	}
+
+	function Presenta(){
+		if(this.status==200 && this.readyState==4){
+				console.log(this.responseXML);
+				var cedes=this.responseXML.getElementsByTagName('CD');
+
+			for (var i = 0; i < cedes.length; i++) {
+				var titulos=cedes[i].getElementsByTagName("TITLE")[0].firstChild.nodeValue;
+				console.log(titulo);
+			}
+
+			}
+	}
+</script>
+
+</head>
+
+<body>
+	
+</body>
+</html>

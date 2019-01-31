@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Programacion Tv</title>
+
+<script>
+
+var canales;
+var programacion;
+var dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+var mes = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+
+window.onload = function(){
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function(){
+		if (xhr.readyState == 4 && xhr.status == 200){
+			canales = JSON.parse(xhr.responseText);
+			console.log(canales);
+			console.log("Estado "+canales.estado);
+			
+			PonerFecha();
+
+			for (var i = 0; i < canales.data.length; i++) {
+				document.getElementById('fotos').innerHTML+="<img src='logos/"+canales.data[i].url+"' onclick='mostrarProgramacion("+canales.data[i].id+")'>    ";
+			}
+		}
+	}
+	xhr.open("GET","canales.php",true);
+	xhr.send();	
+}//fin funcion
+
+function PonerFecha(){
+	var fecha= new Date("2018-03-07");
+	var nombreDia=dias[fecha.getDay()];
+		
+	var numDia=fecha.getDate();
+ 	var nombreMes=mes[fecha.getMonth()];
+ 	var anio=fecha.getFullYear();
+   	var fechaFinal = nombreDia + ' ' + numDia + ' de ' + nombreMes + ' de ' + anio;
+    document.getElementById("fecha").innerHTML=fechaFinal;
+}
+
+
+function mostrarProgramacion(idCanal){
+	alert(idCanal);
+	if(idCanal==1 || idCanal==2){
+		alert("no hay programacion disponible");
+	}
+	else{
+		var x = new XMLHttpRequest();
+			x.onreadystatechange = function(){
+				if (x.status == 200 && x.readyState == 4){
+					programacion = JSON.parse(x.responseText);
+					console.log(programacion);
+					document.getElementById("canal").innerHTML=canales.data[idCanal-1].nombre;
+					ponerProgramacion();
+				}
+			}
+			x.open("POST","programas.php",true);
+			x.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+			x.send("id="+idCanal+"&"+"fecha=2018-03-07");
+	}		
+}//fin funcion
+
+
+function ponerProgramacion(){
+	alert("hola");
+	var texto="";
+
+	programacion.sort(function(a,b){
+		if(a.hora<b.hora) return -1;
+	});
+
+	texto+="<tr><th><b>Hora</b></th><th align='center'>Programa</th>";
+
+	for (var i = 0; i < programacion.length; i++) {
+		if(programacion[i]==null){
+			alert("no hay programacion disponible");
+		}
+		else{
+			texto+="<tr onmouseover='grafico("+i+")'><td>"+programacion[i].hora+"</td><td onclick='mostrarDescripcion("+i+")'>"+programacion[i].nombre+"<div id="+i+"></div></td></tr>";
+		}
+		console.log(programacion);
+	}
+	document.getElementById("programacion").innerHTML=texto;
+	
+
+}//fin funcion
+
+function mostrarDescripcion(id){
+
+	var texto="";
+	var bandera=true;
+//FALLA AQUI
+	for (var i = 0; i < programacion.length; i++) {
+		document.getElementById(id).innerHTML="";
+	}
+	document.getElementById(id).innerHTML=programacion[id].descripcion;
+}
+
+function grafico(i){
+
+document.getElementsByTagName('tr')[i+1].style.color="red";
+var trs = document.getElementsByTagName("tr");
+
+	for (var i=1;i<trs.length;i++){
+		trs[i].onmouseout = function(){
+			this.style.color = 'black';	
+		}
+	}
+}
+
+
+</script>
+
+</head>
+<body>
+	<h1>Programacion de Tv del <span id="fecha"></span></h1>
+Pulse sobre el canal
+<br>
+<div id="fotos">
+	
+</div>
+
+<h3 id="canal"></h3>
+<table border="2" id="programacion"></table>
+</body>
+</html>

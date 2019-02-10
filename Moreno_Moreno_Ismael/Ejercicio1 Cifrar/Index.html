@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Cifrado y descrifrado de texto</title>
+
+<script src="cifrado.js"></script>
+<script>
+var cifradoTexto=JSON.parse(cifrado);
+	function Cifrar(){
+		var bandera=false;
+		var numeroArray=[];
+		var area1=document.getElementById('area1').value;
+		area1=area1.toUpperCase();
+		alert(area1[0]);
+		for (var i = 0; i <= area1.length; i++) {
+			for (var j = 0; j < cifradoTexto.length; j++) {
+				bandera=false;
+				if(cifradoTexto[j].letra==area1[i]){
+					numeroArray.push(cifradoTexto[j].numero);
+					numeroArray[numeroArray.length]="";
+					bandera=true;
+				}
+			}
+		}
+		
+		if(bandera==true){
+			numeroArray.push("*");
+		}
+		document.getElementById("area2").value="";
+		for (var i = 0; i < numeroArray.length; i++) {
+			document.getElementById("area2").value+=numeroArray[i]+" ";
+		}
+	}//fin funcion
+	function Descifrar(){
+		var bandera=false;
+		var arrayLetras=document.getElementById('area2').value.split("");
+		
+		for (var i = 0; i < arrayLetras.length; i++) {
+			bandera=false;
+		
+			for (var i = 0; i < arrayLetras.length; i++) {
+				if(arrayLetras[i]==cifradoTexto[i].numero){
+					document.getElementById("area1").value+=cifradoTexto[i].texto+"";
+					bandera=true;
+				}
+			}
+		}
+		if(bandera==true){
+			document.getElementById("area1").value+=" * ";
+		}
+	}//fin funcion
+</script>
+
+</head>
+<body>
+	<h1>Cifrado/descifrado de texto</h1>
+	<span>Texto a cifrar <textarea name="area1" id="area1" cols="30" rows="10"></textarea> <button onclick="Cifrar()">Cifrar</button> </span>
+	<span>Texto a descifrar <textarea name="area2" id="area2" cols="30" rows="10"></textarea><button onclick="Descifrar()">Descifrar</button> </span>
+</body>
+</html>

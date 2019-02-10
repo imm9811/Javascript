@@ -1,0 +1,37 @@
+@charset "utf-8";
+/* CSS Document */
+
+	.contenedor{
+		position: absolute;
+		left:450px;
+		margin: 10px auto;
+		height: 115px;
+	}
+
+	.reloj{
+		display: inline-block;
+		font-size: 80px;
+		font-family: Courier,sans-serif;
+		color: #363431;
+	}
+	.botones{
+		display:inline-flex;
+	}
+	
+
+	.btn{
+		outline: none;
+		border: 1px solid #363431;
+		color: white;
+		width: 128px;
+		height: 30px;
+		border-radius: 5px;
+		font-family: Helvetica;
+		cursor: pointer;
+		
+	}
+	.boton:active{
+		background-image: linear-gradient(#2c6f05,#3aad02);
+	}
+		
+	
